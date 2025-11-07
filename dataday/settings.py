@@ -96,12 +96,17 @@ DATABASES = {
         'PASSWORD': os.getenv('DATABASE_PASSWORD'),
         'HOST': os.getenv('DATABASE_HOST'),
         'PORT': os.getenv('DATABASE_PORT'),
+        'OPTIONS': {
+            'options': '-C client_encoding=utf8'
+        }
     }
 }
 
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
+
+AUTH_USER_MODEL = 'constructor.CustomUser'
 
 AUTH_PASSWORD_VALIDATORS = [
     {

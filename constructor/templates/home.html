@@ -1,28 +1,64 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Home - Dashboard{% endblock %}
+{% block head %}
+    {{ block.super }}
+    <script src="{% static 'js/init.js' %}"></script>
+{% endblock %}
 
 {% block content %}
 <div class="flex justify-center items-center h-screen bg-gray-100">
     <div class="md:w-1/2">
         <div class="bg-white shadow-md rounded-lg w-full p-8">
             <h2 class="text-2xl font-semibold mb-6 text-center">Ingreso a Mercurio C4</h2>
-            <form action="/login" method="post" class="space-y-4" novalidate>
+            <form method="post" id="LoginForm" class="space-y-4">
                 {% csrf_token %}
                 <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700">Correo</label>
-                    <input id="email" name="email" type="email" required
-                        class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                        placeholder="ejemplo@email.com" aria-describedby="email-help">
+                    <label for="username" class="block text-sm font-medium text-gray-700">Usuario</label>
+                    {{ login_form.username }}
+
+                    <script>
+                        document.getElementById('{{ login_form.username.id_for_label }}').className = 'mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500';
+                        document.getElementById('{{ login_form.username.id_for_label }}').type = 'text';
+                        document.getElementById('{{ login_form.username.id_for_label }}').placeholder = 'usuario123';
+                        document.getElementById('{{ login_form.username.id_for_label }}').required = true;
+                    </script>
                 </div>
-    
+
                 <div>
                     <label for="password" class="block text-sm font-medium text-gray-700">Contraseña</label>
-                    <input id="password" name="password" type="password" required
-                        class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                        placeholder="••••••••">
+                    <div class="relative">
+                        {{ login_form.password }}
+                        <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-600 hover:text-gray-800">
+                            <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <script>
+                        document.getElementById('{{ login_form.password.id_for_label }}').className = 'mt-1 block w-full px-4 py-2 pr-10 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500';
+                        document.getElementById('{{ login_form.password.id_for_label }}').type = 'password';
+                        document.getElementById('{{ login_form.password.id_for_label }}').placeholder = '********';
+                        document.getElementById('{{ login_form.password.id_for_label }}').required = true;
+                        
+                        function togglePassword() {
+                            const passwordField = document.getElementById('{{ login_form.password.id_for_label }}');
+                            const eyeIcon = document.getElementById('eye-icon');
+                            
+                            if (passwordField.type === 'password') {
+                                passwordField.type = 'text';
+                                eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />';
+                            } else {
+                                passwordField.type = 'password';
+                                eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />';
+                            }
+                        }
+                    </script>
                 </div>
-    
+
                 <div class="flex items-center justify-between text-sm">
                     <label class="flex items-center space-x-2">
                         <input type="checkbox" name="remember" class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
@@ -30,12 +66,12 @@
                     </label>
                     <a href="/forgot-password" class="text-indigo-600 hover:underline">¿Olvidaste tu contraseña?</a>
                 </div>
-    
-                <button type="submit"
+
+                <button type="submit" name="login_submit"
                     class="w-full mt-2 bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Ingresar
                 </button>
-    
+
                 <p class="text-center text-sm text-gray-600 mt-4">
                     ¿No tienes una cuenta?
                     <a href="/signup" class="text-indigo-600 hover:underline">Crea una cuenta </a>
