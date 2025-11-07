@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.shortcuts import render, redirect
 from django.views import View
 from django.http import HttpResponse, JsonResponse
@@ -7,6 +8,8 @@ from django.contrib.auth import login, logout, authenticate
 import requests
 import json
 from .forms import *
+from .functions import *
+import random
 
 class HomeView(LoginView):
     for_class = AuthenticationForm
@@ -51,3 +54,46 @@ class HomeView(LoginView):
                 }
                 return JsonResponse(context) 
             
+        elif 'register_submit' in request.POST:
+            create_form = register_form(request.POST)
+            if create_form.is_valid():
+                
+                code = ''.join([str(random.randint(0, 9)) for _ in range(8)])
+                correo = create_form.cleaned_data.get('Correo')
+                cuenta = create_form.cleaned_data.get('Cuenta')
+                today = timezone.now()
+                
+                print(hub_register(correo, cuenta))
+                
+                """ if hub_register(correo, cuenta) is True:
+                    if not HolderUser.objects.filter(correo=correo).exists():
+                        new_holder = HolderUser.objects.create(
+                            correo=correo,
+                            cuenta=cuenta,
+                            code=code,
+                            fhRegistro=today
+                        )
+                        new_holder.save()
+                        context = {
+                            "success": True,
+                            "message": "Registro exitoso, por favor revise su correo para activar su cuenta"
+                        }
+                        return JsonResponse(context)
+                    else:
+                        context = {
+                            "success": False,
+                            "message": "Ya existe un usuario registrado con este correo"
+                        }
+                        return JsonResponse(context)
+                else:
+                    context = {
+                        "success": False,
+                        "message": "Los datos que ingresaste no coinciden con ningun registro en el hub, por favor verifica los datos ingresados"
+                    }
+                    return JsonResponse(context) """
+            else:
+                context = {
+                    "success": False,
+                    "message": "Formulario de registro no valido"
+                }
+                return JsonResponse(context)

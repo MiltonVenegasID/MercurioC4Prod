@@ -13,3 +13,8 @@ class CustomUser(AbstractUser):
     Estado = models.BooleanField(default=True)
     ref = models.CharField(max_length=100, null=True, blank=True)
     
+class HolderUser(models.Model):
+    cuenta = models.CharField(max_length=100)
+    correo = models.EmailField(blank=False, null=False)
+    fhRegistro = models.DateTimeField(auto_now_add=True)
+    code = models.CharField(max_length=100, null=True, blank=True)

@@ -7,34 +7,22 @@ from django.forms import JSONField
 
 User = get_user_model()
 
-class CustomUserCreationForm(UserCreationForm):
+#I will generate here the stand for users before passing to user model instead
+class CustomUserCreationForm(forms.ModelForm):
     class Meta:
-        model = User
-        fields = ('username', 'Nombre', 'Apellidos', 'Correo', 'Telefono', 'TipoUsuario', 'Suscripciones', 'Estado', 'ref', 'password1', 'password2')
+        model = HolderUser
+        fields = ['Correo', 'Cuenta']
 
-    def clean_password2(self):
-        password1 = self.cleaned_data.get("password1")
-        password2 = self.cleaned_data.get("password2")
-        if password1 and password2 and password1 != password2:
-            raise forms.ValidationError("Las contraseñas no coinciden.")
-        validate_password(password2, self.instance)
-        return password2
-    
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.Nombre = self.cleaned_data['Nombre']
-        user.Apellidos = self.cleaned_data['Apellidos']
-        user.Correo = self.cleaned_data['Correo']
-        user.Telefono = self.cleaned_data['Telefono']
-        user.TipoUsuario = self.cleaned_data['TipoUsuario']
-        user.Suscripciones = self.cleaned_data['Suscripciones']
-        user.Estado = self.cleaned_data['Estado']
-        user.ref = self.cleaned_data['ref']
-        user.set_password(self.cleaned_data['password1'])
-        if commit:
-            user.save()
-        return user
-
+    Correo = forms.EmailField(
+        required=True,
+        label='Correo',
+        widget=forms.EmailInput(attrs={'aria-label': 'Correo', 'class': 'form-control'})
+    )
+    Cuenta = forms.CharField(
+        required=True,
+        label='Cuenta',
+        widget=forms.TextInput(attrs={'aria-label': 'Cuenta', 'class': 'form-control'})
+    )
 class ResetPasswordForm(forms.Form):
     usernamepass = forms.CharField(
         required=True,

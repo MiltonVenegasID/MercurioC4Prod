@@ -10,7 +10,7 @@
 {% block content %}
 <div class="flex justify-center items-center h-screen bg-gray-100">
     <div class="md:w-1/2">
-        <div class="bg-white shadow-md rounded-lg w-full p-8">
+        <div class="bg-white shadow-md rounded-lg w-full p-8" id="LoginForm">
             <h2 class="text-2xl font-semibold mb-6 text-center">Ingreso a Mercurio C4</h2>
             <form method="post" id="LoginForm" class="space-y-4">
                 {% csrf_token %}
@@ -74,7 +74,42 @@
 
                 <p class="text-center text-sm text-gray-600 mt-4">
                     ¿No tienes una cuenta?
-                    <a href="/signup" class="text-indigo-600 hover:underline">Crea una cuenta </a>
+                    <a onclick="showRegistroForm()" class="text-indigo-600 hover:underline">Crea una cuenta </a>
+                </p>
+            </form>
+        </div>
+        <div class="bg-white shadow-md rounded-lg w-full p-8" style="display: none" id="RegisterForm">
+            <h2 class="text-2xl font-semibold mb-6 text-center">Registro de usuario</h2>
+            <form method="post" id="RegisterForm" class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <label for="correo" class="block text-sm font-medium text-gray-700">Correo</label>
+                    {{ create_form.Correo }}
+                    <script>
+                        document.getElementById('{{ create_form.Correo.id_for_label }}').className = 'mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500';
+                        document.getElementById('{{ create_form.Correo.id_for_label }}').type = 'email';
+                        document.getElementById('{{ create_form.Correo.id_for_label }}').placeholder = 'email@email.com';
+                        document.getElementById('{{ create_form.Correo.id_for_label }}').required = true;
+                    </script>
+                </div>
+                <div>
+                    <label for="cuenta" class="block text-sm font-medium text-gray-700">Cuenta</label>
+                    {{ create_form.Cuenta }}
+                    <script>
+                        document.getElementById('{{ create_form.Cuenta.id_for_label }}').className = 'mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500';
+                        document.getElementById('{{ create_form.Cuenta.id_for_label }}').type = 'text';
+                        document.getElementById('{{ create_form.Cuenta.id_for_label }}').placeholder = 'usuario123';
+                        document.getElementById('{{ create_form.Cuenta.id_for_label }}').required = true;
+                    </script>
+                </div>
+
+                <button type="submit" name="register_submit"
+                    class="w-full mt-2 bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Registrarse
+                </button>
+                <p class="text-sm text-gray-600 mt-4">
+                    Ya tienes una cuenta?
+                    <a onclick="showLoginForm()" class="text-indigo-600 hover:underline">Iniciar Sesion</a>
                 </p>
             </form>
         </div>
