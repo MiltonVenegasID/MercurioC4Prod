@@ -10,19 +10,25 @@ User = get_user_model()
 #I will generate here the stand for users before passing to user model instead
 class CustomUserCreationForm(forms.ModelForm):
     class Meta:
-        model = HolderUser
-        fields = ['Correo', 'Cuenta']
-
-    Correo = forms.EmailField(
-        required=True,
-        label='Correo',
-        widget=forms.EmailInput(attrs={'aria-label': 'Correo', 'class': 'form-control'})
-    )
-    Cuenta = forms.CharField(
-        required=True,
-        label='Cuenta',
-        widget=forms.TextInput(attrs={'aria-label': 'Cuenta', 'class': 'form-control'})
-    )
+        model = ClientesGC
+        fields = ['Nombre', 'Cta']
+        widgets = {
+            'Nombre': forms.TextInput(),
+            'Cta': forms.TextInput(),
+        }
+        labels = {
+            'Nombre': 'Razon social',
+            'Cta': 'Cuenta Global'
+        }
+    
+    def save(self, commit=True):
+        cliente = super().save(commit=False)
+        cliente.Razon = self.cleaned_data['Nombre']
+        cliente.Cta = self.cleaned_data['Cta']
+        if commit:
+            cliente.save()
+        return cliente
+    
 class ResetPasswordForm(forms.Form):
     usernamepass = forms.CharField(
         required=True,
