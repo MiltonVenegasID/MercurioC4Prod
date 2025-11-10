@@ -20,7 +20,7 @@ class HomeView(LoginView):
     def post(self, request):
         print(request.POST)
         login_form = AuthenticationForm
-        register_form = ClientesGC
+        register_form = CustomUserCreationForm
         context = {
             'login_form': login_form(),
             'create_form': register_form()
@@ -58,7 +58,22 @@ class HomeView(LoginView):
                 nombre = create_form.cleaned_data.get('Nombre')
                 cta = create_form.cleaned_data.get('Cta')
                 response = hub_register(nombre, cta)
-                print(response)
+                if response['success']:
+                    context = {
+                        "success": True,
+                        "message": "Registro exitoso, por favor revise su correo para continuar con el proceso.",
+                        'login_form': login_form(),
+                        'create_form': register_form()
+                    }
+                    return render(request, 'home.html', context)
+                else:
+                    context = {
+                        "success": False,
+                        "message": response['message'],
+                        'login_form': login_form(),
+                        'create_form': register_form()
+                    }
+                    return render(request, 'home.html', context)
                 
             else:
                 context = {

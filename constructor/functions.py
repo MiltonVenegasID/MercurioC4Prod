@@ -58,33 +58,38 @@ def hub_register(nombre, cta):
             if item['mailCont'] in GestoresCreationRequest.objects.values_list('email', flat=True):
                 three_digits = ''.join(random.choices(string.digits, k=3))
                 new_email = item['mailCont'].replace('@', f'{three_digits}@')
-                email=new_email,
-                data = {
-                    'NombreCompleto': item['nomCont'],
-                    'Telefono': '',
-                    'Cta': general_search['noCliente'],
-                    'TipoUsuario': item['tipoCont'],
-                    'ref': item['idCliente'],
-                    'email': item['mailCont'],
-                    'empresa': nombre
-                },
-                token=token
+                GestoresCreationRequest.objects.create(
+                    email=new_email,
+                    data = {
+                        'NombreCompleto': item['nomCont'],
+                        'Telefono': '',
+                        'Cta': cta,
+                        'TipoUsuario': item['tipoCont'],
+                        'ref': item['idCliente'],
+                        'email': item['mailCont'],
+                        'empresa': nombre
+                    },
+                    token=token
+                )
                 
 
             else:
-                data = {
-                    'NombreCompleto': item['nomCont'],
-                    'Telefono': '',
-                    'Cta': general_search['noCliente'],
-                    'TipoUsuario': item['tipoCont'],
-                    'ref': item['idCliente'],
-                    'email': item['mailCont'],
-                    'empresa': nombre
-                },
-                token=token
-                
-            
-            
-
-            
+                GestoresCreationRequest.objects.create(
+                    email=item['mailCont'],
+                    data = {
+                        'NombreCompleto': item['nomCont'],
+                        'Telefono': '',
+                        'Cta': cta,
+                        'TipoUsuario': item['tipoCont'],
+                        'ref': item['idCliente'],
+                        'email': item['mailCont'],
+                        'empresa': nombre
+                    },
+                    token=token
+                )
+        data = {
+            "success": True,
+            "message": "Solicitud de registro creada exitosamente. Revisa tu correo para completar el proceso.",
+            "ref": "Success"
+        }
         return data
