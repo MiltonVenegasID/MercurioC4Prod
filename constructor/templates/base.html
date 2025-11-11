@@ -10,6 +10,14 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <link rel="icon" href="{% static 'images/head.svg' %}" type="image/x-icon">
+        <script type="importmap">
+            {
+              "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.181.1/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.181.1/examples/jsm/"
+              }
+            }
+        </script>
         {% compress css %}
         <link rel="stylesheet" href="{% static 'css/dist/styles.css' %}">
         {% endcompress %}

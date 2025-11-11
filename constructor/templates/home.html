@@ -5,11 +5,14 @@
 {% block head %}
     {{ block.super }}
     <script src="{% static 'js/init.js' %}"></script>
-{% endblock %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta/dist/vanta.net.min.js"></script>
+    
+    {% endblock %}
 
 {% block content %}
 
-<div class="flex justify-center items-center h-screen bg-gray-100">
+<div class="flex justify-center items-center h-screen bg-gray-100" id="vantajs">
     <div class="md:w-1/2">
         <div class="bg-white shadow-md rounded-lg w-full p-8" id="LoginForm">
             <h2 class="text-2xl font-semibold mb-6 text-center">Ingreso a Mercurio C4</h2>
@@ -128,4 +131,7 @@
         </div>
     </div>
 </div>
+
+<script src="{% static 'js/motion.js' %}"></script>
+
 {% endblock %}
