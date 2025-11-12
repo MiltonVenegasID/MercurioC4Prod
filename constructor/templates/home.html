@@ -15,7 +15,9 @@
 <div class="flex justify-center items-center h-screen bg-gray-100" id="vantajs">
     <div class="md:w-1/2">
         <div class="bg-white shadow-md rounded-lg w-full p-8" id="LoginForm">
-            <h2 class="text-2xl font-semibold mb-6 text-center">Ingreso a Mercurio C4</h2>
+            <div class="flex justify-center">
+                <img src="{% static 'images/Title-nobg.png' %}" alt="Logo" class="">
+            </div>
             <form method="post" id="LoginForm" class="space-y-4">
                 {% csrf_token %}
                 <div>

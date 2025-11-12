@@ -1,0 +1,1 @@
+c:\Users\Colibecas\Documents\Github\Assignament npx @tailwindcss/cli -i ./constructor/static/src/input.css -o ./constructor/static/css/dist/styles.css
