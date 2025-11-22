@@ -42,7 +42,23 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'tailwind',
     'compressor',
-    'constructor'
+    'constructor',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'corsheaders',
+    'djoser'
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:8080',
+    'http://localhost:8081',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8080',
+    'http://localhost:8081',
 ]
 
 TAILWIND_APP_NAME = 'constructor'
@@ -52,6 +68,7 @@ NPM_BIN_PATH = 'C:/Program Files/nodejs/npm.cmd'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',

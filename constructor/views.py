@@ -8,76 +8,78 @@ import requests
 import json
 from .forms import *
 from .functions import *
+from django.middleware.csrf import get_token
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
-class HomeView(LoginView):
-    for_class = AuthenticationForm
-    def get(self, request):
-        form = AuthenticationForm()
-        reset_form = ResetPasswordForm()
-        create_form = CustomUserCreationForm()
-        return render(request, 'home.html', {'login_form': form, 'reset_form': reset_form, 'create_form': create_form})
+@csrf_exempt
+def testing_comms(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            return JsonResponse({'status': 'sueccess', 'message': 'Data received successfully'})
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
     
-    def post(self, request):
-        print(request.POST)
-        login_form = AuthenticationForm
-        register_form = CustomUserCreationForm
-        context = {
-            'login_form': login_form(),
-            'create_form': register_form()
-        }
-        
-        if 'login_submit' in request.POST:
-            auth_form = login_form(request, data=request.POST)
-            if auth_form.is_valid():
-                username = auth_form.cleaned_data.get('username')
-                password = auth_form.cleaned_data.get('password')
-                user = authenticate(request, username=username, password=password)
-                context = {
+def get_csrf_token(request):
+    token = get_token(request)
+    return JsonResponse({'csrfToken': token})
+    
+
+@csrf_exempt
+def home_view(request):
+    login_form = AuthenticationForm
+    register_form = CustomUserCreationForm
+
+    if 'login_submit' in request.POST:
+        auth_form = login_form(request, data=request.POST)
+        print(auth_form.errors)
+        if auth_form.is_valid():
+            username = auth_form.cleaned_data.get('username')
+            password = auth_form.cleaned_data.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return JsonResponse({
                     "success": True,
                     "message": "Inicio de sesion exitoso"
-                } 
-                if user is not None:
-                    login(request, user)
-                    return HttpResponse("Logged in successfully")
-                else:
-                    context = {
-                        "success": False,
-                        "message": "Usuario o contraseña incorrectos"
-                    }
-                    return JsonResponse(context)
+                })
             else:
-                context = {
+                return JsonResponse({
                     "success": False,
-                    "message": "Formulario de inicio de sesion no valido"
-                }
-                return JsonResponse(context) 
-            
-        elif 'register_submit' in request.POST:
-            create_form = register_form(request.POST)
-            if create_form.is_valid():
-                nombre = create_form.cleaned_data.get('Nombre')
-                cta = create_form.cleaned_data.get('Cta')
-                response = hub_register(nombre, cta)
-                if response['success']:
-                    context = {
-                        "success": True,
-                        "message": "Registro exitoso, por favor revise su correo para continuar con el proceso.",
-                        'login_form': login_form(),
-                        'create_form': register_form()
-                    }
-                    return render(request, 'home.html', context)
-                else:
-                    context = {
-                        "success": False,
-                        "message": response['message'],
-                        'login_form': login_form(),
-                        'create_form': register_form()
-                    }
-                    return render(request, 'home.html', context)
-                
+                    "message": "Usuario o contraseña incorrectos"
+                })
+        else:
+            return JsonResponse({
+                "success": False,
+                "message": "Formulario de inicio de sesion no valido"
+            })
+
+    elif 'register_submit' in request.POST:
+        create_form = register_form(request.POST)
+        if create_form.is_valid():
+            nombre = create_form.cleaned_data.get('Nombre')
+            cta = create_form.cleaned_data.get('Cta')
+            response = hub_register(nombre, cta)
+            if response['success']:
+                return JsonResponse({
+                    "success": True,
+                    "message": "Registro exitoso, por favor revise su correo para continuar con el proceso."
+                })
             else:
-                context = {
+                return JsonResponse({
                     "success": False,
-                    "message": "Formulario de registro no valido"
-                }
-                return JsonResponse(context)
+                    "message": response['message']
+                })
+        else:
+            return JsonResponse({
+                "success": False,
+                "message": "Formulario de registro no valido"
+            })
+
+    return JsonResponse({
+        "success": False,
+        "message": "Acción no reconocida"
+    }, status=400)
