@@ -1,3 +1,4 @@
+
 <template>
   <div id="wrapper">
     <nav class="navbar-brand">
@@ -42,9 +43,9 @@
                     placeholder="e.g. Empresa S.A."
                     required
                   />
-                  <span class="icon is-small is-left">
-                    <i class="fas fa-user"></i>
-                  </span>
+                <span class="icon is-small is-left">
+                  <i class="pi pi-briefcase"></i>
+                </span>
                 </div>
               </div>
 
@@ -61,7 +62,7 @@
                       required
                     />
                     <span class="icon is-small is-left">
-                      <i class="fas fa-envelope"></i>
+                      <i class="pi pi-user"></i>
                     </span>
                   </div>
                 </div>
@@ -79,7 +80,7 @@
                     required
                   />
                   <span class="icon is-small is-left">
-                    <i class="fas fa-envelope"></i>
+                    <i class="pi pi-id-card"></i>
                   </span>
                 </div>
               </div>
@@ -97,7 +98,7 @@
                     required
                   />
                   <span class="icon is-small is-left">
-                    <i class="fas fa-lock"></i>
+                    <i class="pi pi-lock"></i>
                   </span>
                 </div>
               </div>
@@ -105,7 +106,7 @@
               <div class="field" v-if="!isRegister">
                 <label class="checkbox">
                   <input v-model="remember" type="checkbox" />
-                  Remember me
+                  Recordar Inicio de sesion
                 </label>
               </div>
 
@@ -136,8 +137,6 @@
 </template>
 
 <script>
-
-
 export default {
   name: 'App',
   data() {
@@ -158,11 +157,11 @@ export default {
       try {
         const formData = new FormData();
         if (this.isRegister) {
-          formData.append('companyName', this.companyName);
-          formData.append('numeroCuenta', this.numeroCuenta);
+          formData.append('Nombre', this.companyName);
+          formData.append('Cta', this.numeroCuenta);
           formData.append('register_submit', true);
         } else {
-          formData.append('usuario', this.usuario);
+          formData.append('username', this.usuario);
           formData.append('password', this.password);
           formData.append('remember', this.remember);
           formData.append('login_submit', true);
@@ -179,7 +178,7 @@ export default {
         }
       } catch (err) {
         console.error('Error sending form data:', err);
-        this.error = 'Login failed. Please try again.';
+        this.error = 'Hubo un error al procesar su solicitud. Por favor, intente de nuevo.';
       }
     }
   }
@@ -187,5 +186,6 @@ export default {
 </script>
 
 <style lang="scss">
-@import '../node_modules/bulma'
+@import '../node_modules/bulma';
+@import '../node_modules/primeicons/primeicons.css';
 </style>

@@ -35,7 +35,6 @@ def home_view(request):
 
     if 'login_submit' in request.POST:
         auth_form = login_form(request, data=request.POST)
-        print(auth_form.errors)
         if auth_form.is_valid():
             username = auth_form.cleaned_data.get('username')
             password = auth_form.cleaned_data.get('password')
@@ -52,9 +51,11 @@ def home_view(request):
                     "message": "Usuario o contraseña incorrectos"
                 })
         else:
+            errors = json.loads(auth_form.errors.as_json())
+            message = errors.get("__all__", [{}])[0].get("message", "Usuario o contraseña incorrectos")
             return JsonResponse({
                 "success": False,
-                "message": "Formulario de inicio de sesion no valido"
+                "message": message
             })
 
     elif 'register_submit' in request.POST:

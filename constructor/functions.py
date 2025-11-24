@@ -2,14 +2,19 @@ from multiprocessing import context
 import os
 import string
 import uuid
-from dotenv import load_dotenv
 import requests
 from django.http import JsonResponse
+from django.core.mail import send_mail, get_connection
+from django.conf import settings
 import random
 from .models import *
 
-
-load_dotenv()
+connection = get_connection(
+    host=settings.SMTP_HOST,
+    port=settings.SMTP_PORT,
+    username=settings.SMTP_USERNAME,
+    password=settings.SMTP_PASSWORD
+)
 
 def hub_register(nombre, cta):
     api = os.getenv('API_HUB')
@@ -55,6 +60,13 @@ def hub_register(nombre, cta):
             if not item['mailCont']:
                 continue
             token = uuid.uuid4()
+            existing_count = GestoresCreationRequest.objects.filter(
+                data__email=item['mailCont']
+            ).count()
+            
+            if existing_count >= 3:
+                continue
+            
             if item['mailCont'] in GestoresCreationRequest.objects.values_list('email', flat=True):
                 three_digits = ''.join(random.choices(string.digits, k=3))
                 new_email = item['mailCont'].replace('@', f'{three_digits}@')
@@ -72,7 +84,14 @@ def hub_register(nombre, cta):
                     token=token
                 )
                 
-
+                send_mail('Confirmación de registro - Acción requerida',
+                        f'Estimado/a {item["nomCont"]},\n\nHemos notado que el correo electrónico proporcionado ya está en uso. '
+                        f'Por favor, utilice el siguiente correo electrónico alternativo para completar su registro: {new_email}\n\nGracias por su comprensión.',
+                        settings.EMAIL_HOST_USER,
+                        [item['mailCont']],
+                        fail_silently=False,
+                        connection=connection
+                          )
             else:
                 GestoresCreationRequest.objects.create(
                     email=item['mailCont'],
