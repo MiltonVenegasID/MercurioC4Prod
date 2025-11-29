@@ -50,14 +50,14 @@
               </div>
 
                 <div v-else class="field">
-                  <label class="label" for="Usuario">Usuario</label>
+                  <label class="label" for="username">Usuario</label>
                   <div class="control has-icons-left">
                     <input
-                      v-model="Usuario"
+                      v-model="username"
                       class="input"
                       type="text"
-                      id="usuario"
-                      name="usuario"
+                      id="username"
+                      name="username"
                       placeholder="e.g. ejemplo123"
                       required
                     />
@@ -161,12 +161,13 @@ export default {
           formData.append('Cta', this.numeroCuenta);
           formData.append('register_submit', true);
         } else {
-          formData.append('username', this.usuario);
+          formData.append('username', this.username);
           formData.append('password', this.password);
           formData.append('remember', this.remember);
           formData.append('login_submit', true);
         }
 
+        console.log('Sending form data:', Array.from(formData.entries()));
         const response = await this.$http.post('/api/data/', formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });

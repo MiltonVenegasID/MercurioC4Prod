@@ -11,6 +11,8 @@ from .functions import *
 from django.middleware.csrf import get_token
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from pymongo import MongoClient
+from django.contrib.auth.hashers import check_password
 
 @csrf_exempt
 def testing_comms(request):
@@ -30,33 +32,45 @@ def get_csrf_token(request):
 
 @csrf_exempt
 def home_view(request):
-    login_form = AuthenticationForm
     register_form = CustomUserCreationForm
 
     if 'login_submit' in request.POST:
-        auth_form = login_form(request, data=request.POST)
-        if auth_form.is_valid():
-            username = auth_form.cleaned_data.get('username')
-            password = auth_form.cleaned_data.get('password')
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
+        try:
+            data = json.loads(request.body) if request.content_type == 'application/json' else request.POST
+            username = data.get('username')
+            password = data.get('password')
+            
+            if not username or not password:
+                return JsonResponse({
+                    "success": False,
+                    "message": "Usuario y contraseña son requeridos"
+                })
+            
+            client = MongoClient('mongodb://localhost:27017/')
+            db = client['GlobalDatabase']
+            users_collection = db['GlobalUsers']
+            
+            
+            user_data = users_collection.find_one({'username': username})
+            
+            if user_data and check_password(password, user_data.get('password')):
+                request.session['user_id'] = str(user_data['_id'])
+                request.session['username'] = user_data['username']
                 return JsonResponse({
                     "success": True,
-                    "message": "Inicio de sesion exitoso"
+                    "message": "Inicio de sesión exitoso"
                 })
             else:
                 return JsonResponse({
                     "success": False,
                     "message": "Usuario o contraseña incorrectos"
                 })
-        else:
-            errors = json.loads(auth_form.errors.as_json())
-            message = errors.get("__all__", [{}])[0].get("message", "Usuario o contraseña incorrectos")
+        except Exception as e:
             return JsonResponse({
                 "success": False,
-                "message": message
-            })
+                "message": f"Error en el proceso de autenticación: {str(e)}"
+            }, status=500)
+        
 
     elif 'register_submit' in request.POST:
         create_form = register_form(request.POST)
